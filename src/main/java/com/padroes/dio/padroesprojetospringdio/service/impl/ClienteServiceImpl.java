@@ -3,6 +3,7 @@ package com.padroes.dio.padroesprojetospringdio.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.padroes.dio.padroesprojetospringdio.model.Cliente;
 import com.padroes.dio.padroesprojetospringdio.model.ClienteRepository;
@@ -11,14 +12,14 @@ import com.padroes.dio.padroesprojetospringdio.model.EnderecoRepository;
 import com.padroes.dio.padroesprojetospringdio.service.ClienteService;
 import com.padroes.dio.padroesprojetospringdio.service.ViaCepService;
 
+@Service
 public class ClienteServiceImpl implements ClienteService {
 
+    // Singleton: Injetar os componentes do Spring com @Autowired.
     @Autowired
     private ClienteRepository clienteRepository;
-
     @Autowired
     private EnderecoRepository enderecoRepository;
-
     @Autowired
     private ViaCepService viaCepService;
 
@@ -53,14 +54,13 @@ public class ClienteServiceImpl implements ClienteService {
 
     private void salvarClienteComCep(Cliente cliente) {
         String cep = cliente.getEndereco().getCep();
-        Endereco endereco = enderecoRepository.findAllById(cep).orElseGet(() -> {
+        Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
             Endereco novoEndereco = viaCepService.consultarCep(cep);
             enderecoRepository.save(novoEndereco);
             return novoEndereco;
         });
         cliente.setEndereco(endereco);
         clienteRepository.save(cliente);
-
     }
 
 }
